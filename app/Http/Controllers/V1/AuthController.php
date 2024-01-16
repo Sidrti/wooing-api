@@ -115,13 +115,13 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        $otp = mt_rand(1000, 9999); // Generate OTP
+        $password = mt_rand(1000000, 99999999); // Generate OTP
 
         if($user) {
             if($user->is_verified)
             {
                 $user->update([
-                    'otp' => $otp,
+                    'password' => bcrypt($password),
                 ]);
             }
             else
@@ -130,7 +130,7 @@ class AuthController extends Controller
             }
              // Mail::to($user->email)->send(new OtpMail($otp));
 
-            return response()->json(['status_code'=>1,'data'=>['id'=>$user->id],'message' => 'Email with OTP sent..','test_otp' => $otp]);
+            return response()->json(['status_code'=>1,'data'=>['id'=>$user->id],'message' => 'Password has been sent to your registered email id. You can later change it.','password' => $password]);
         }
         else {
             return response()->json(['status_code'=>2,'data'=> [],'message' => 'User not registered']);
@@ -158,7 +158,9 @@ class AuthController extends Controller
             return response()->json(['status_code'=>1,'data'=>['id'=>$user->id, 'uid' => $uid ,'first_name' => $user->first_name],'message' => 'Email verified. Continue to change your password']);
         }
         return response()->json(['status_code'=>2,'data'=> [],'message' => 'Invalid Otp']);
-    }  
+    } 
+    /* NOT IN SCOPE */
+    /* 
     public function forgetPasswordChangePassword(Request $request)
     {
         $request->validate([
@@ -201,6 +203,7 @@ class AuthController extends Controller
 
         return response()->json(['status_code'=>1,'data'=> [],'message' => 'Password changed.']);
     }
+    */
     public function meProfile()
     {
         return response()->json(['status_code'=>1,'data'=> [auth()->user()],'message' => 'User profile fetched successfully']);
