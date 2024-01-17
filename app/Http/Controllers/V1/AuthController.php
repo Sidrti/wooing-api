@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,16 +45,26 @@ class AuthController extends Controller
             'mobile_number' => 'required',
             'password' => 'required|min:6',
             'dob' => 'required|date_format:Y-m-d',
+            'profile_picture' => 'required|mimes:jpeg,jpg,png|max:2048',
         ]);
 
         $otp = mt_rand(1000, 9999); // Generate OTP
 
         $user = User::where('email', $request->email)->first();
 
+        $path = '';
+
         if($user)
         {
             if(!$user->is_verified)
             {
+                if($request->has('profile_picture'))
+                {
+                    $file = $request->file('profile_picture');
+                    $dir = '/uploads/profile/';
+                    $path = Helper::saveImageToServer($file,$dir);
+                }
+
                 $user->update([
                     'name' => $request->input('name'),
                     'city' => $request->input('city'),
@@ -61,6 +72,7 @@ class AuthController extends Controller
                     'password' => bcrypt($request->input('password')),
                     'dob' => $request->input('city'),
                     'otp' => $otp,
+                    'profile_picture' => $path
                 ]);
             }
             else
@@ -70,6 +82,12 @@ class AuthController extends Controller
         }
         else 
         {
+            if($request->has('profile_picture'))
+            {
+                $file = $request->file('profile_picture');
+                $dir = '/uploads/profile/';
+                $path = Helper::saveImageToServer($file,$dir);
+            }
             $user = new User();
             $user->name = $request->input('name');
             $user->city = $request->input('city');
@@ -78,6 +96,7 @@ class AuthController extends Controller
             $user->dob = $request->input('dob');
             $user->password = bcrypt($request->input('password'));
             $user->otp = $otp;
+            $user->profile_picture = $path;
             $user->save();
         }
 
