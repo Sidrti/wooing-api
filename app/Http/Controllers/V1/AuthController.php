@@ -70,7 +70,7 @@ class AuthController extends Controller
                     'city' => $request->input('city'),
                     'mobile_number' =>  $request->input('mobile_number'),
                     'password' => bcrypt($request->input('password')),
-                    'dob' => $request->input('city'),
+                    'dob' => $request->input('dob'),
                     'otp' => $otp,
                     'profile_picture' => $path
                 ]);
