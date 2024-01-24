@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProfileController;
+use App\Http\Controllers\V1\ProfileMatchingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +26,8 @@ Route::prefix('v1')->group(function () {
         Route::post("/profile/create",[ProfileController::class,'create']);
         Route::get("/profile/fetch",[ProfileController::class,'fetchProfile']);
         Route::post("/profile/update",[ProfileController::class,'updateProfile']);
+
+        Route::get("/profile-matching/fetch",[ProfileMatchingController::class,'findMatchingProfiles']);
+        Route::post("/profile-matching/update-location",[ProfileMatchingController::class,'updateLocation']);
     });
 });
