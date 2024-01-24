@@ -137,6 +137,7 @@ return [
     | Supported drivers: "file", "cache"
     |
     */
+    'media_base_url' => env('MEDIA_BASE_URL'),
 
     'maintenance' => [
         'driver' => 'file',
@@ -155,7 +156,6 @@ return [
     */
 
     'providers' => [
-
         /*
          * Laravel Framework Service Providers...
          */

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'is_verified',
         'city',
+        'mobile_number',
         'dob',
         'role',
         'verification_uid',
@@ -48,4 +49,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+    public function getProfilePictureAttribute($value)
+    {
+        return $value != null ? config('app.media_base_url') . $value : $value;
+    }
+    public function followers()
+    {
+        return $this->hasMany(Follower::class, 'user_id', 'id');
+    }
+
 }
