@@ -23,7 +23,7 @@ Route::prefix('v1')->group(function () {
 
     Route::group(['middleware' => ['auth:sanctum']], function () { 
         Route::post("/profile/create",[ProfileController::class,'create']);
-        Route::post("/profile/fetch",[ProfileController::class,'fetchProfile']);
+        Route::get("/profile/fetch",[ProfileController::class,'fetchProfile']);
         Route::post("/profile/update",[ProfileController::class,'updateProfile']);
     });
 });
