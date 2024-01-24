@@ -17,8 +17,9 @@ class Profile extends Model
         'drinking',
         'smoking',
         'user_id',
-        'bio'
-        // Add other fields as needed
+        'bio',
+        'longitude',
+        'latitude'
     ];
 
     public function user()
