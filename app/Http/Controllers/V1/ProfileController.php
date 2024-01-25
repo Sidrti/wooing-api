@@ -43,6 +43,12 @@ class ProfileController extends Controller
             'profile_picture' =>$user->profile_picture,
             'email' => $user->email,
             'phone_number' => $user->mobile_number,
+            'sex' => $user->profile->sex,
+            'marital_status' => $user->profile->marital_status,
+            'religion' => $user->profile->religion,
+            'looking_for' => $user->profile->looking_for,
+            'drinking' => $user->profile->drinking,
+            'smoking' => $user->profile->smoking,
             'media' => []
         ];
 
@@ -54,6 +60,12 @@ class ProfileController extends Controller
             'mobile_number' => 'string|max:20',
             'bio' => 'string|max:255',
             'profile_picture' => 'mimes:jpeg,jpg,png|max:2048',
+            'sex' => 'in:male,female,other',
+            'marital_status' => 'in:single,married,divorced,widowed',
+            'religion' => 'string',
+            'looking_for' => 'string',
+            'drinking' => 'in:yes,no,occasionally',
+            'smoking' => 'in:yes,no,occasionally',
         ]);
         
 
@@ -75,6 +87,12 @@ class ProfileController extends Controller
         if ($user->profile) {
             $user->profile->update([
                 'bio' => $request->input('bio', $user->profile->bio),
+                'sex' => $request->input('sex', $user->profile->sex),
+                'marital_status' => $request->input('marital_status', $user->profile->marital_status),
+                'religion' => $request->input('religion', $user->profile->religion),
+                'looking_for' => $request->input('looking_for', $user->profile->looking_for),
+                'drinking' => $request->input('drinking', $user->profile->drinking),
+                'smoking' => $request->input('smoking', $user->profile->smoking),
             ]);
         }
 

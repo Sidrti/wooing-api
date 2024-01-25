@@ -36,16 +36,19 @@ class ProfileMatchingController extends Controller
                 $query->where('name', 'like', '%' . $request->input('q') . '%');
             }
             if ($request->has('distance')) {
-                $latitude = $userInterests->latitude;
-                $longitude = $userInterests->longitude;
-                $distance = $request->input('distance');
-                
-                if($latitude != null) {
-                    $query->whereRaw(DB::raw(
-                        "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians($longitude) - radians(longitude)) + sin(radians($latitude)) * sin(radians(latitude)))) <= $distance"
-                    ));
-                }
 
+                $distance = $request->input('distance');
+            }
+            else {
+                $distance = 50;
+            }
+            $latitude = $userInterests->latitude;
+            $longitude = $userInterests->longitude;
+                
+            if($latitude != null) {
+                $query->whereRaw(DB::raw(
+                    "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians($longitude) - radians(longitude)) + sin(radians($latitude)) * sin(radians(latitude)))) <= $distance"
+                ));
             }
         })
         ->with(['user:id,name,profile_picture'])
