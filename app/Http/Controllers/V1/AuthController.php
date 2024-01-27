@@ -19,11 +19,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
+        $user->load('profile');
         if($user) {
             if($user->is_verified) {
                 if ($user && Hash::check($request->input('password'), $user->password)) { 
                     $token = $user->createToken('api-token')->plainTextToken;
-                    return response()->json(['status_code' => 1,'data' => ['user' => $user, 'token' => $token ],'message'=>'Login successfull.']);
+                    return response()->json(['status_code' => 1,'data' => ['user' => $user,'profile_filled' => isset($user->profile), 'token' => $token ],'message'=>'Login successfull.']);
                 }
                 else {
                     return response()->json(['status_code' => 2, 'data' => [], 'message'=>'Incorrect password.']);
