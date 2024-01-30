@@ -21,8 +21,8 @@ class ProfileController extends Controller
             'marital_status' => 'required|in:single,married,divorced,widowed',
             'religion' => 'required|string',
             'looking_for' => 'required|string',
-            'drinking' => 'required|in:yes,no,occasionally',
-            'smoking' => 'required|in:yes,no,occasionally',
+            'drinking' => 'required|in:socially,no,often,regularly',
+            'smoking' => 'required|in:socially,no,often,regularly',
         ]);
         $user->profile()->updateOrCreate([], $request->all());
 
@@ -64,8 +64,8 @@ class ProfileController extends Controller
             'marital_status' => 'in:single,married,divorced,widowed',
             'religion' => 'string',
             'looking_for' => 'string',
-            'drinking' => 'in:yes,no,occasionally',
-            'smoking' => 'in:yes,no,occasionally',
+            'drinking' => 'in:socially,no,often,regularly',
+            'smoking' => 'in:socially,no,often,regularly',
         ]);
         
 
