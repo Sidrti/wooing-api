@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -19,8 +20,9 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        $user->load('profile');
+        
         if($user) {
+            $user->load('profile');
             if($user->is_verified) {
                 if ($user && Hash::check($request->input('password'), $user->password)) { 
                     $token = $user->createToken('api-token')->plainTextToken;

@@ -20,17 +20,17 @@ class ProfileMatchingController extends Controller
         }
 
         $matchingProfiles = Profile::whereHas('user', function ($query) use ($userInterests,$request) {
-            $query->where('sex', '!=', $userInterests->sex);
+            // $query->where('sex', '!=', $userInterests->sex);
         
-            if ($userInterests->looking_for === 'sugar daddy') {
-                $query->where('sex', 'female');
-                $query->whereDate('dob', '<=', now()->subYears(40)->format('Y-m-d')); // Assuming age > 40
-            } elseif ($userInterests->looking_for === 'sugar momma') {
-                $query->where('sex', 'male');
-                $query->whereDate('dob', '<=', now()->subYears(40)->format('Y-m-d')); // Assuming age > 40
-            } else {
-                $query->where('looking_for', $userInterests->looking_for);
-            }
+            // if ($userInterests->looking_for === 'sugar daddy') {
+            //     $query->where('sex', 'female');
+            //     $query->whereDate('dob', '<=', now()->subYears(40)->format('Y-m-d')); // Assuming age > 40
+            // } elseif ($userInterests->looking_for === 'sugar momma') {
+            //     $query->where('sex', 'male');
+            //     $query->whereDate('dob', '<=', now()->subYears(40)->format('Y-m-d')); // Assuming age > 40
+            // } else {
+            //     $query->where('looking_for', $userInterests->looking_for);
+            // }
 
             if ($request->has('q')) {
                 $query->where('name', 'like', '%' . $request->input('q') . '%');
@@ -45,7 +45,7 @@ class ProfileMatchingController extends Controller
             $latitude = $userInterests->latitude;
             $longitude = $userInterests->longitude;
                 
-            if($latitude != null) {
+            if($latitude != null && $longitude != null) {
                 $query->whereRaw(DB::raw(
                     "(6371 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians($longitude) - radians(longitude)) + sin(radians($latitude)) * sin(radians(latitude)))) <= $distance"
                 ));
