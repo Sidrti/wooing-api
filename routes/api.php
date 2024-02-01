@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
 use Illuminate\Http\Request;
@@ -29,5 +30,8 @@ Route::prefix('v1')->group(function () {
 
         Route::get("/profile-matching/fetch",[ProfileMatchingController::class,'findMatchingProfiles']);
         Route::post("/profile-matching/update-location",[ProfileMatchingController::class,'updateLocation']);
+
+        Route::post("/post/create",[PostController::class,'create']);
+        Route::get("/post/fetch",[PostController::class,'fetchPosts']);
     });
 });

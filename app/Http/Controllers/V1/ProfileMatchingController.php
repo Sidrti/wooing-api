@@ -19,7 +19,7 @@ class ProfileMatchingController extends Controller
             return response()->json(['status_code' => 2, 'data'=>[], 'message' => 'User profile not found.'], 200);
         }
 
-        $matchingProfiles = Profile::whereHas('user', function ($query) use ($userInterests,$request) {
+        $matchingProfiles = Profile::whereHas('user', function ($query) use ($userInterests,$request,$user) {
             // $query->where('sex', '!=', $userInterests->sex);
         
             // if ($userInterests->looking_for === 'sugar daddy') {
@@ -32,6 +32,7 @@ class ProfileMatchingController extends Controller
             //     $query->where('looking_for', $userInterests->looking_for);
             // }
 
+            $query->where('user_id','!=',$user->id);
             if ($request->has('q')) {
                 $query->where('name', 'like', '%' . $request->input('q') . '%');
             }
