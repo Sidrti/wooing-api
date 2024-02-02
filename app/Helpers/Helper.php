@@ -19,5 +19,9 @@ class Helper
 
         return $filePath;
     }
+    public static function sendEmail($to,$subject,$body,$headers)
+    {
+        mail($to, $subject, $body,$headers);
+    }
 
 }

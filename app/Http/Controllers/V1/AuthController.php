@@ -102,9 +102,18 @@ class AuthController extends Controller
             $user->profile_picture = $path;
             $user->save();
         }
-
         // Send OTP to user via email (You can use Laravel's built-in mail or a third-party service)
-       // Mail::to($user->email)->send(new OtpMail($otp));
+        // Mail::to($user->email)->send(new OtpMail($otp));
+
+        $data = [
+            'name' => $user->name,
+            'otp' => $user->otp
+        ];
+        $body = view('email.otp_verification', $data)->render();
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $subject = 'Verify your email';
+        Helper::sendEmail($user->email,$subject,$body,$headers);
 
         return response()->json(['status_code'=>1,'data'=>['id'=>$user->id],'message' => 'User registered successfully. Please verify your email.','test_otp' => $otp]);
     }
@@ -126,6 +135,16 @@ class AuthController extends Controller
                 'otp' => ''
             ]);
             $token = $user->createToken('api-token')->plainTextToken;
+
+            $data = [
+                'name' => $user->name,
+            ];
+            $body = view('email.welcome', $data)->render();
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            $subject = 'Welcome to Wooing';
+            Helper::sendEmail($user->email,$subject,$body,$headers);
+
             return response()->json(['status_code' => 1,'data' => ['user' => $user, 'token' => $token ],'message'=>'User verified successfully']);
         }
         return response()->json(['status_code'=>2,'data'=> [],'message' => 'Invalid Otp']);
@@ -151,6 +170,15 @@ class AuthController extends Controller
                 return response()->json(['status_code'=>2,'data'=>[],'message' => 'User not verified.']);
             }
              // Mail::to($user->email)->send(new OtpMail($otp));
+             $data = [
+                'name' => $user->name,
+                'otp' => $user->otp
+            ];
+            $body = view('email.otp_verification', $data)->render();
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            $subject = 'Verify your email';
+            Helper::sendEmail($user->email,$subject,$body,$headers);
 
             return response()->json(['status_code'=>1,'data'=>['id'=>$user->id],'message' => 'Password has been sent to your registered email id. You can later change it.','password' => $password]);
         }
