@@ -76,12 +76,17 @@ class ProfileController extends Controller
             $file = $request->file('profile_picture');
             $dir = '/uploads/profile/';
             $path = Helper::saveImageToServer($file,$dir);
+            $data = [
+                'mobile_number' => $request->input('mobile_number', $user->mobile_number),
+                'profile_picture' => $path 
+            ];
         }
-
-        $data = [
-            'mobile_number' => $request->input('mobile_number', $user->mobile_number),
-            'profile_picture' => $request->has('profile_picture') ? $path : $user->profile_picture,
-        ];
+        else
+        {
+            $data = [
+                'mobile_number' => $request->input('mobile_number', $user->mobile_number),
+            ];
+        }
         $user->update($data);
 
         if ($user->profile) {
