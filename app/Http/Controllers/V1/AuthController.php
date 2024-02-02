@@ -172,9 +172,9 @@ class AuthController extends Controller
              // Mail::to($user->email)->send(new OtpMail($otp));
              $data = [
                 'name' => $user->name,
-                'otp' => $user->otp
+                'password' => $password
             ];
-            $body = view('email.otp_verification', $data)->render();
+            $body = view('email.forget_password', $data)->render();
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
             $subject = 'Verify your email';
