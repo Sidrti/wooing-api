@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Profile;
+use App\Models\Reaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -45,6 +46,24 @@ class PostController extends Controller
             ->paginate(10); // Adjust the number of posts per page as needed
 
         return response()->json(['status_code' => 1, 'data' => ['posts' => $posts], 'message' => 'Post fetched']);
+    }
+
+    public function likePost(Request $request, $postId)
+    {
+        $request->validate([
+            'post_id' => 'required|exists:posts,id',
+        ]);
+        $user = auth()->user();
+
+        $like = Reaction::firstOrNew([
+            'user_id' => $user->id,
+            'post_id' => $postId,
+        ]);
+
+        $like->reaction = 'like';
+        $like->save();
+
+        return response()->json(['status_code' => 1, 'data' => ['like' => $like], 'message' => 'Post liked successfully.']);
     }
 }
 

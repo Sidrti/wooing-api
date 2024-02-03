@@ -26,4 +26,13 @@ class Post extends Model
     {
         return $value != null ? config('app.media_base_url') . $value : $value;
     }
+    public function likes()
+    {
+        return $this->hasMany(Reaction::class)->where('reaction', 'like');
+    }
+
+    public function dislikes()
+    {
+        return $this->hasMany(Reaction::class)->where('reaction', 'dislike');
+    }
 }
