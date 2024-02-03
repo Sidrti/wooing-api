@@ -4,11 +4,8 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -36,6 +33,8 @@ class ProfileController extends Controller
 
         $followersCount = $user->followers->count();
 
+        $media = Post::where('user_id',$user->id)->get();
+
         $profileData = [
             'followers_count' => $followersCount,
             'bio' => $user->profile->bio,
@@ -49,7 +48,7 @@ class ProfileController extends Controller
             'looking_for' => $user->profile->looking_for,
             'drinking' => $user->profile->drinking,
             'smoking' => $user->profile->smoking,
-            'media' => []
+            'media' => $media
         ];
 
         return response()->json(['status_code'=>1,'data'=>['profile' => $profileData],'message'=> 'Profile fetched']);
