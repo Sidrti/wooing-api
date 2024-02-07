@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('streamings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id')->constrained('users');
-            $table->foreignId('receiver_id')->constrained('users');
-            $table->text('content');
-            $table->text('media_path')->nullable();
-            $table->enum('type', ['EMOJI', 'STICKER', 'PHOTO','VIDEO','TEXT','DIVIDER'])->default('TEXT');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('meeting_id');
+            $table->enum('type',['STREAM','VIDEO','AUDIO'])->default('STREAM');
+            $table->string('status')->default('ACTIVE'); // You can define appropriate data type for status
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('streaming');
     }
 };
