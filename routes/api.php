@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\PostController;
@@ -34,8 +35,14 @@ Route::prefix('v1')->group(function () {
 
         Route::post("/post/create",[PostController::class,'create']);
         Route::get("/post/fetch",[PostController::class,'fetchPosts']);
+        Route::post("/post/like-post",[PostController::class,'likePost']);
+        Route::post("/post/dislike-post",[PostController::class,'disLikePost']);
 
         Route::post('/chat/create', [ChatController::class, 'create']);
         Route::get('/chat/fetch', [ChatController::class, 'fetchMessages']);
+
+        Route::post('/streaming/create', [StreamingController::class, 'create']);
+        Route::post('/streaming/end', [StreamingController::class, 'endStream']);
+        Route::get('/streaming/fetch', [StreamingController::class, 'fetchStreams']);
     });
 });
