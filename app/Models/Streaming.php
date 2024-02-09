@@ -9,7 +9,7 @@ class Streaming extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','meeting_id','type','status'];
+    protected $fillable = ['user_id','meeting_id','type','status','like_count','dislike_count','views_count'];
 
     public function user()
     {

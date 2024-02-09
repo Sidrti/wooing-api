@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
+use App\Http\Controllers\V1\StreamingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,5 +44,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/streaming/create', [StreamingController::class, 'create']);
         Route::post('/streaming/end', [StreamingController::class, 'endStream']);
         Route::get('/streaming/fetch', [StreamingController::class, 'fetchStreams']);
+        Route::post('/streaming/fetch-by-user', [StreamingController::class, 'fetchStreamsByUserId']);
     });
 });
