@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use App\Models\Streaming;
 use Illuminate\Http\Request;
 
@@ -55,5 +56,18 @@ class StreamingController extends Controller
         ->paginate(10); // Adjust the number of posts per page as needed
 
         return response()->json(['status_code' => 1, 'data' => ['streams' => $streams], 'message' => 'Stream fetched']);
+   }
+   public function fetchStreamsByUserId(Request $request)
+   {
+        $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        $stream = Streaming::with(['user:id,name,profile_picture']) 
+        ->where('status','ACTIVE')
+        ->where('user_id',$request->input('user_id'))
+        ->first(); 
+
+        return response()->json(['status_code' => 1, 'data' => ['stream' => $stream], 'message' => 'Stream fetched']);
    }
 }
