@@ -41,7 +41,14 @@ class PostController extends Controller
     }
     public function fetchPosts()
     {
+        $user = auth()->user();
+
         $posts = Post::with(['user:id,name,profile_picture']) // Adjust the relationship as needed
+            ->leftJoin('post_reactions', function ($join) use ($user) {
+                $join->on('posts.id', '=', 'post_reactions.post_id')
+                    ->where('post_reactions.user_id', '=', $user->id);
+            })
+            ->select('posts.*', 'post_reactions.reaction as reaction')
             ->orderByDesc('created_at')
             ->where('status',1)
             ->paginate(10); // Adjust the number of posts per page as needed

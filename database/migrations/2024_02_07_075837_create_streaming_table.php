@@ -19,9 +19,13 @@ return new class extends Migration
             $table->text('meeting_id');
             $table->enum('type',['STREAM','VIDEO','AUDIO'])->default('STREAM');
             $table->string('status')->default('ACTIVE'); // You can define appropriate data type for status
+            $table->integer('like_count')->default(0);
+            $table->integer('dislike_count')->default(0);
+            $table->integer('views_count')->default(0);
             $table->timestamps();
         });
     }
+    
 
     /**
      * Reverse the migrations.
@@ -30,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('streaming');
+        Schema::dropIfExists('streamings');
     }
 };
