@@ -53,7 +53,7 @@ class ChatController extends Controller
                     ->orWhere('sender_id', $receiverId)
                     ->where('receiver_id', $user->id);
             })
-            ->orderBy('created_at', 'asc')
+            ->orderBy('messages.id','desc')
             ->paginate(20);
 
         return response()->json(['status_code' => 1, 'data' => ['chats' => $chats], 'message' => 'Chat fetched']);

@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('drinking', ['yes', 'no', 'occasionally']);
             $table->enum('smoking', ['yes', 'no', 'occasionally']);
             $table->text('bio')->nullable(); 
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             // Add other fields as needed
 
             $table->timestamps();
