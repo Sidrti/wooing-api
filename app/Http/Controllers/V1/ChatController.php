@@ -15,7 +15,7 @@ class ChatController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'content' => 'nullable',
             'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
-            'type' => 'required|in:EMOJI,STICKER,PHOTO,VIDEO,TEXT','DIVIDER',
+            'type' => 'required|in:EMOJI,STICKER,PHOTO,VIDEO,TEXT,DIVIDER',
         ]);
 
         $user = auth()->user();

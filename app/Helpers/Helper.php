@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Notification;
 use File;
 
 class Helper
@@ -23,5 +24,15 @@ class Helper
     {
         mail($to, $subject, $body,$headers);
     }
+    public static function createNotification($userId, $type, $message, $data = null)
+    {
+        $serializedData = json_encode($data);
 
+        $notification = new Notification();
+        $notification->user_id = $userId;
+        $notification->message = $message;
+        $notification->type = $type;
+        $notification->data = $serializedData;
+        $notification->save();
+    }
 }
