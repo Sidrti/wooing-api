@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
+use App\Http\Controllers\V1\FriendRequestController;
 use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
@@ -45,5 +46,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/streaming/end', [StreamingController::class, 'endStream']);
         Route::get('/streaming/fetch', [StreamingController::class, 'fetchStreams']);
         Route::post('/streaming/fetch-by-user', [StreamingController::class, 'fetchStreamsByUserId']);
+
+        Route::post('/friend-request/create', [FriendRequestController::class, 'create']);
+        Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
+        Route::post('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
+
     });
 });
