@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\PostMedia;
 use App\Models\PostReaction;
 use App\Models\Profile;
 use App\Models\Reaction;
@@ -17,25 +18,31 @@ class PostController extends Controller
     {
         $request->validate([
             'caption' => 'nullable|string',
-            'media' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480', // Adjust as needed
+            'media.*' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480', // Adjust as needed
             'media_type' => 'required|in:1,2', // 1 - photo, 2 - video
         ]);
 
-
         $user = auth()->user();
-
-        $file = $request->file('media');
-        $dir = '/uploads/posts/';
-        $path = Helper::saveImageToServer($file,$dir);
 
         $post = new Post([
             'user_id' => $user->id,
-            'caption' => $request->input('caption',''),
-            'media_type' => $request->input('media_type'),
-            'media_path' => $path
+            'caption' => $request->input('caption', ''),
         ]);
 
         $post->save();
+        // Save media files
+        foreach ($request->file('media') as $file) {
+            $dir = '/uploads/posts/';
+            $path = Helper::saveImageToServer($file, $dir);
+
+            // Create post media entry
+            $postMedia = new PostMedia([
+                'post_id' => $post->id,
+                'media_path' => $path,
+                'media_type' => $request->input('media_type'),
+            ]);
+            $postMedia->save();
+        }
 
         return response()->json(['status_code' => 1, 'data' => [], 'message' => 'Post updated']);
     }
@@ -48,11 +55,18 @@ class PostController extends Controller
                 $join->on('posts.id', '=', 'post_reactions.post_id')
                     ->where('post_reactions.user_id', '=', $user->id);
             })
-            ->select('posts.*', 'post_reactions.reaction as reaction')
-            ->orderByDesc('created_at')
+            ->leftJoin('post_medias','post_medias.post_id','posts.id')
+            ->select('posts.*', 'post_reactions.reaction as reaction','post_medias.media_path','post_medias.media_type')
+            ->orderByDesc('posts.created_at')
             ->where('status',1)
             ->paginate(10); // Adjust the number of posts per page as needed
-
+            
+            $posts->getCollection()->transform(function ($post) {
+                if ($post->media_path) {
+                    $post->media_path = config('app.media_base_url') . $post->media_path;
+                }
+                return $post;
+            });
         return response()->json(['status_code' => 1, 'data' => ['posts' => $posts], 'message' => 'Post fetched']);
     }
 

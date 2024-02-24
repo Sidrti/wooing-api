@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\FriendRequest;
 use App\Models\Streaming;
 use Illuminate\Http\Request;
 
@@ -63,10 +64,27 @@ class StreamingController extends Controller
             'user_id' => 'required',
         ]);
 
+        $authUserId = auth()->user()->id;
+        $userId = $request->input('user_id');
+
         $stream = Streaming::with(['user:id,name,profile_picture']) 
         ->where('status','ACTIVE')
         ->where('user_id',$request->input('user_id'))
         ->first(); 
+
+        if (!$stream) {
+            return response()->json(['status_code' => 0, 'message' => 'Stream not found']);
+        }
+
+        $friendRequestStatus = FriendRequest::where(function ($query) use ($userId, $authUserId) {
+            $query->where('sender_id', $authUserId)
+                ->where('receiver_id', $userId)
+                ->orWhere('sender_id', $userId)
+                ->where('receiver_id', $authUserId);
+        })
+        ->value('accepted');
+
+        $stream->friend_request_status = $friendRequestStatus == null ? 'NOT_SENT' : $friendRequestStatus;
 
         return response()->json(['status_code' => 1, 'data' => ['stream' => $stream], 'message' => 'Stream fetched']);
    }

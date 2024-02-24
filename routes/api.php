@@ -29,6 +29,7 @@ Route::prefix('v1')->group(function () {
     Route::group(['middleware' => ['auth:sanctum']], function () { 
         Route::post("/profile/create",[ProfileController::class,'create']);
         Route::get("/profile/fetch",[ProfileController::class,'fetchProfile']);
+        Route::get("/profile/fetch-profile-by-id",[ProfileController::class,'fetchProfileById']);
         Route::post("/profile/update",[ProfileController::class,'updateProfile']);
 
         Route::get("/profile-matching/fetch",[ProfileMatchingController::class,'findMatchingProfiles']);
@@ -49,7 +50,9 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/friend-request/create', [FriendRequestController::class, 'create']);
         Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
-        Route::post('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
+        Route::get('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
+        Route::get('/friend-request/fetch', [FriendRequestController::class, 'fetchFriendRequest']);
+        
 
     });
 });
