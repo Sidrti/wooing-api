@@ -35,6 +35,7 @@ class ProfileController extends Controller
         $followersCount = $user->followers->count();
 
         $media = Post::where('user_id',$user->id)->get();
+        $media->load('postMedia');
 
         $profileData = [
             'followers_count' => $followersCount,
@@ -119,6 +120,7 @@ class ProfileController extends Controller
         $followersCount = $user->followers->count();
 
         $media = Post::where('user_id',$userId)->get();
+        $media->load('postMedia');
 
         $profileData = [
             'followers_count' => $followersCount,

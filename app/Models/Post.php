@@ -22,13 +22,18 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function likes()
-    {
-        return $this->hasMany(Reaction::class)->where('reaction', 'like');
-    }
+    // public function likes()
+    // {
+    //     return $this->hasMany(PostReaction::class)->where('reaction', 'like');
+    // }
 
-    public function dislikes()
+    // public function dislikes()
+    // {
+    //     return $this->hasMany(PostReaction::class)->where('reaction', 'dislike');
+    // }
+
+    public function postMedia()
     {
-        return $this->hasMany(Reaction::class)->where('reaction', 'dislike');
+        return $this->hasMany(PostMedia::class, 'post_id', 'id');
     }
 }
