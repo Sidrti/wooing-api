@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -103,6 +104,40 @@ class ProfileController extends Controller
         return response()->json(['status_code' => 1, 'data' => ['user' => $user], 'message' => 'Profile updated successfully']);
         
     }
+
+    public function fetchProfileById(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $userId = $request->input('user_id');
+        $user = User::where('id',$userId)->first();
+
+        $user->load('profile');
+
+        $followersCount = $user->followers->count();
+
+        $media = Post::where('user_id',$userId)->get();
+
+        $profileData = [
+            'followers_count' => $followersCount,
+            'bio' => $user->profile->bio,
+            'name' => $user->name,
+            'profile_picture' =>$user->profile_picture,
+            'email' => $user->email,
+            'phone_number' => $user->mobile_number,
+            'sex' => $user->profile->sex,
+            'marital_status' => $user->profile->marital_status,
+            'religion' => $user->profile->religion,
+            'looking_for' => $user->profile->looking_for,
+            'drinking' => $user->profile->drinking,
+            'smoking' => $user->profile->smoking,
+            'media' => $media
+        ];
+
+        return response()->json(['status_code'=>1,'data'=>['profile' => $profileData],'message'=> 'Profile fetched']);
+    } 
 }
 
 ?>

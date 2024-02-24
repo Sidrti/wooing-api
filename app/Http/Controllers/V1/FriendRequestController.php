@@ -96,6 +96,46 @@ class FriendRequestController extends Controller
 
         return response()->json(['status_code' => 1, 'data' => ['friends' => $friendDetails], 'message' => 'Friends fetched successfully']);
     }
+    public function fetchFriendRequest(Request $request)
+    {
+        $user = auth()->user();
+    
+        // Fetch friend requests involving the user
+        $friendRequests = FriendRequest::where('sender_id', $user->id)
+            ->orWhere('receiver_id', $user->id)
+            ->get();
+    
+        // Extract friend IDs excluding the user's own ID
+        $friendIds = $friendRequests->pluck('sender_id')->merge($friendRequests->pluck('receiver_id'))->reject(function ($friendId) use ($user) {
+            return $friendId == $user->id;
+        })->unique();
+    
+        // Retrieve friend details and their request status
+        $friendsWithStatus = collect();
+        foreach ($friendIds as $friendId) {
+            $friend = User::find($friendId);
+            $friendRequest = $friendRequests->first(function ($request) use ($friendId, $user) {
+                return ($request->sender_id == $friendId && $request->receiver_id == $user->id) ||
+                       ($request->sender_id == $user->id && $request->receiver_id == $friendId);
+            });
+            $status = $friendRequest ? $friendRequest->accepted : null;
+    
+            $friendsWithStatus->push([
+                'friend_id' => $friend->id,
+                'name' => $friend->name,
+                'email' => $friend->email,
+                'profile_picture' => $friend->profile_picture,
+                'friend_request_status' => $status,
+            ]);
+        }
+    
+        return response()->json([
+            'status_code' => 1,
+            'data' => ['friends' => $friendsWithStatus],
+            'message' => 'Friends fetched successfully'
+        ]);
+    }
+    
 } 
 
 ?>
