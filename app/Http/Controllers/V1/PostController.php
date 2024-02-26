@@ -18,8 +18,10 @@ class PostController extends Controller
     {
         $request->validate([
             'caption' => 'nullable|string',
+            'media' => 'required|array',
             'media.*' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480', // Adjust as needed
-            'media_type' => 'required|in:1,2', // 1 - photo, 2 - video
+            'media_type' => 'required|array', // Ensure media_type is an array
+            'media_type.*' => 'required|in:1,2', // Ensure each media_type is valid (1 - photo, 2 - video)
         ]);
 
         $user = auth()->user();
@@ -31,17 +33,21 @@ class PostController extends Controller
 
         $post->save();
         // Save media files
+        
+        $i = 0;
         foreach ($request->file('media') as $file) {
             $dir = '/uploads/posts/';
             $path = Helper::saveImageToServer($file, $dir);
+            $media_type = isset($request->media_type[$i]) ? $request->media_type[$i] : 0;
 
             // Create post media entry
             $postMedia = new PostMedia([
                 'post_id' => $post->id,
                 'media_path' => $path,
-                'media_type' => $request->input('media_type'),
+                'media_type' => $media_type,
             ]);
             $postMedia->save();
+            $i++;
         }
 
         return response()->json(['status_code' => 1, 'data' => [], 'message' => 'Post updated']);
@@ -112,6 +118,7 @@ class PostController extends Controller
         $request->validate([
             'post_id' => 'required|exists:posts,id',
         ]);
+        
         $user = auth()->user();
 
         $postReaction = PostReaction::where('user_id', $user->id)
