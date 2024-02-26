@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\FriendRequest;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -122,6 +123,19 @@ class ProfileController extends Controller
         $media = Post::where('user_id',$userId)->get();
         $media->load('postMedia');
 
+        $friendRequestStatus = null;
+        if (auth()->check()) {
+            $loggedInUser = auth()->user();
+            $friendRequest = FriendRequest::where(function ($query) use ($loggedInUser, $userId) {
+                $query->where('sender_id', $loggedInUser->id)->where('receiver_id', $userId);
+            })->orWhere(function ($query) use ($loggedInUser, $userId) {
+                $query->where('sender_id', $userId)->where('receiver_id', $loggedInUser->id);
+            })->first();
+            if ($friendRequest) {
+                $friendRequestStatus = $friendRequest->accepted;
+            }
+        }
+
         $profileData = [
             'followers_count' => $followersCount,
             'bio' => $user->profile->bio,
@@ -135,7 +149,8 @@ class ProfileController extends Controller
             'looking_for' => $user->profile->looking_for,
             'drinking' => $user->profile->drinking,
             'smoking' => $user->profile->smoking,
-            'media' => $media
+            'friend_request_status' => $friendRequestStatus == null ? 'NOT_FRIENDS' : $friendRequestStatus,
+            'media' => $media,
         ];
 
         return response()->json(['status_code'=>1,'data'=>['profile' => $profileData],'message'=> 'Profile fetched']);

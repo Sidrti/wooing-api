@@ -52,7 +52,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
         Route::get('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
         Route::get('/friend-request/fetch', [FriendRequestController::class, 'fetchFriendRequest']);
-        
-
+    
     });
 });

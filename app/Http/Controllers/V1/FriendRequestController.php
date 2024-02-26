@@ -109,7 +109,7 @@ class FriendRequestController extends Controller
         $friendIds = $friendRequests->pluck('sender_id')->merge($friendRequests->pluck('receiver_id'))->reject(function ($friendId) use ($user) {
             return $friendId == $user->id;
         })->unique();
-    
+
         // Retrieve friend details and their request status
         $friendsWithStatus = collect();
         foreach ($friendIds as $friendId) {
@@ -121,6 +121,7 @@ class FriendRequestController extends Controller
             $status = $friendRequest ? $friendRequest->accepted : null;
     
             $friendsWithStatus->push([
+                'friend_request_id' => $friendRequest ? $friendRequest->id : null,
                 'friend_id' => $friend->id,
                 'name' => $friend->name,
                 'email' => $friend->email,
