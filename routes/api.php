@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\V1\CommentController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
+use App\Http\Controllers\V1\GroupController;
 use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
@@ -57,6 +58,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/comment/create', [CommentController::class, 'commentOnPost']);
         Route::post('/comment/reply', [CommentController::class, 'replyToComment']);
         Route::get('/comment/fetch', [CommentController::class, 'fetchCommentsWithReplies']);
+
+        Route::post('/group/create', [GroupController::class, 'create']);
+        Route::get('/group/fetch', [GroupController::class, 'fetchGroupInfo']);
+        Route::post('/group/leave', [GroupController::class, 'leaveGroup']);
+        Route::post('/group/add-users-to-group', [GroupController::class, 'addAdditionalUserIdToGroupId']);
         
     });
 });

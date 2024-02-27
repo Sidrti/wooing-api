@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\CommentReply;
 use App\Models\Post;
@@ -54,7 +55,7 @@ class CommentController extends Controller
         ]);
 
         $comments = Comment::where('post_id',$request->input('post_id'))
-        ->with(['replies','user:id,name,profile_picture'])
+        ->with(['replies.user:id,name,profile_picture', 'user:id,name,profile_picture'])
         ->paginate(10);
 
         return response()->json(['status_code' => 1, 'data' => ['comments' => $comments], 'message' => 'Comments fetched successfully']);
