@@ -90,9 +90,14 @@ class FriendRequestController extends Controller
         $friendIds = $friends->pluck('sender_id')->merge($friends->pluck('receiver_id'))->reject(function ($friendId) use ($user) {
             return $friendId == $user->id;
         })->unique();
-
         // Retrieve friend details
         $friendDetails = User::whereIn('id', $friendIds)->select('id', 'name', 'email','profile_picture')->get();
+
+        
+        $friendDetails->map(function ($friend) {
+            $friend->type = 'SINGLE';
+            return $friend;
+        });
 
         return response()->json(['status_code' => 1, 'data' => ['friends' => $friendDetails], 'message' => 'Friends fetched successfully']);
     }
