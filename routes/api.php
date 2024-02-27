@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
@@ -52,6 +53,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
         Route::get('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
         Route::get('/friend-request/fetch', [FriendRequestController::class, 'fetchFriendRequest']);
-    
+
+        Route::post('/comment/create', [CommentController::class, 'commentOnPost']);
+        Route::post('/comment/reply', [CommentController::class, 'replyToComment']);
+        Route::get('/comment/fetch', [CommentController::class, 'fetchCommentsWithReplies']);
+        
     });
 });

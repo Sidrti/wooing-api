@@ -56,13 +56,13 @@ class PostController extends Controller
     {
         $user = auth()->user();
 
-        $posts = Post::with(['user:id,name,profile_picture']) // Adjust the relationship as needed
+        $posts = Post::with(['user:id,name,profile_picture','postMedia']) // Adjust the relationship as needed
             ->leftJoin('post_reactions', function ($join) use ($user) {
                 $join->on('posts.id', '=', 'post_reactions.post_id')
                     ->where('post_reactions.user_id', '=', $user->id);
             })
-            ->leftJoin('post_medias','post_medias.post_id','posts.id')
-            ->select('posts.*', 'post_reactions.reaction as reaction','post_medias.media_path','post_medias.media_type')
+            // ->leftJoin('post_medias','post_medias.post_id','posts.id')
+            ->select('posts.*', 'post_reactions.reaction as reaction')
             ->orderByDesc('posts.created_at')
             ->where('status',1)
             ->paginate(10); // Adjust the number of posts per page as needed
