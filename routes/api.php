@@ -63,6 +63,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/group/fetch', [GroupController::class, 'fetchGroupInfo']);
         Route::post('/group/leave', [GroupController::class, 'leaveGroup']);
         Route::post('/group/add-users-to-group', [GroupController::class, 'addAdditionalUserIdToGroupId']);
+        Route::post('/group/remove-users-from-group', [GroupController::class, 'removeUsersFromGroup']);
+        Route::post('/group/edit-name', [GroupController::class, 'editGroupName']);
         
     });
 });
