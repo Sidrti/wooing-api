@@ -106,9 +106,13 @@ class FriendRequestController extends Controller
         $user = auth()->user();
     
         // Fetch friend requests involving the user
-        $friendRequests = FriendRequest::where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
-            ->get();
+        $friendRequests = FriendRequest::where(function ($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                  ->orWhere('receiver_id', $user->id);
+        })
+        ->where('accepted', 'NO_ACTION')
+        ->get();
+        
     
         // Extract friend IDs excluding the user's own ID
         $friendIds = $friendRequests->pluck('sender_id')->merge($friendRequests->pluck('receiver_id'))->reject(function ($friendId) use ($user) {
