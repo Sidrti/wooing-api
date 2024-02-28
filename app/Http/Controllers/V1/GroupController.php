@@ -50,9 +50,12 @@ class GroupController extends Controller
             'user_ids' => 'required|array',
             'user_ids.*' => 'exists:users,id',
         ]);
-        $this->addUserToGroupId($request->input('user_ids'),$request->input('group_id'),auth()->user()->id);
+        $isUpdated = $this->addUserToGroupId($request->input('user_ids'),$request->input('group_id'),auth()->user()->id);
+        if($isUpdated) {
+            return response()->json(['status_code' => 1, 'message' => 'User added to group']);
+        }
 
-        return response()->json(['status_code' => 1, 'message' => 'User added to group']);
+        return response()->json(['status_code' => 0, 'message' => 'You need to be the admin of the group to add group memebers']);
     }
     public function fetchGroupInfo(Request $request)
     {
@@ -92,8 +95,55 @@ class GroupController extends Controller
             'message' => 'Group information fetched successfully'
         ]);
     }
+    public function removeUsersFromGroup(Request $request)
+    {
+        $request->validate([
+            'group_id' => 'required|exists:groups,id',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $group = Group::findOrFail($request->group_id);
+        $user = auth()->user();
+    
+        // Check if the authenticated user is the admin of the group
+        if ($user->id === $group->admin_id) {
+            // Remove the user from the group
+            GroupUsers::where('group_id', $request->input('group_id'))
+                ->where('user_id', $request->input('user_id'))
+                ->delete();
+    
+            return response()->json(['status_code' => 1, 'message' => 'User removed from the group successfully']);
+        } else {
+            return response()->json(['status_code' => 0, 'message' => 'Only group admin can remove users from the group']);
+        }
+    }
+    public function editGroupName(Request $request)
+    {
+        $request->validate([
+            'group_id' => 'required|exists:groups,id',
+            'name' => 'required|string',
+        ]);
+
+        $group = Group::findOrFail($request->group_id);
+        $user = auth()->user();
+    
+        // Check if the authenticated user is the admin of the group
+        if ($user->id === $group->admin_id) {
+            // Remove the user from the group
+            Group::where('id', $request->input('group_id'))
+                ->update(['name' => $request->input('name')]);
+    
+            return response()->json(['status_code' => 1, 'message' => 'Group name changed']);
+        } else {
+            return response()->json(['status_code' => 0, 'message' => 'Only group admin can edit group name']);
+        }
+    }
     private function addUserToGroupId($userIds,$groupId,$authUserId)
     {
+        $group = Group::find($groupId);
+        if($group->admin_id != $authUserId) {
+            return false;
+        }
         foreach ($userIds as $userId) {
             if($userId != $authUserId) {
                 $existingEntry = GroupUsers::where('user_id', $userId)
@@ -108,5 +158,6 @@ class GroupController extends Controller
                 }
             }
         }
+        return true;
     }
 }
