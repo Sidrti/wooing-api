@@ -5,7 +5,9 @@ namespace App\Http\Controllers\V1;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -71,27 +73,38 @@ class ChatController extends Controller
         return response()->json(['status_code' => 1, 'data' => ['chats' => $query], 'message' => 'Chat fetched']);
     }
 
-    public function fetchMessages1(Request $request)
+    public function fetchChatList()
     {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-        ]);
-
         $user = auth()->user();
-        $receiverId = $request->input('receiver_id');
+    
+        $users = User::select(
+            "users.id as user_id",
+            "users.email",
+            "users.name",
+            DB::raw("(SELECT content FROM messages WHERE (sender_id = users.id OR receiver_id = users.id) AND (sender_id = " . $user->id  . " OR receiver_id = " .  $user->id  . ") ORDER BY created_at DESC LIMIT 1) as last_message"),
+            DB::raw("(SELECT 
+                CASE 
+                    WHEN sender_id = " .  $user->id  . " THEN 'sent'
+                    WHEN receiver_id = " .  $user->id  . " THEN 'received'
+                END AS message_direction 
+            FROM messages 
+            WHERE (sender_id = users.id OR receiver_id = users.id) 
+                AND (sender_id = " . $user->id . " OR receiver_id = " . $user->id . ") 
+            ORDER BY created_at DESC LIMIT 1) as type"),
+        )
+        ->orderBy('users.id')
+        ->get();
 
-        $chats = Message::with(['sender', 'receiver'])
-            ->where(function ($query) use ($user,$receiverId) {
-                $query->where('sender_id', $user->id)
-                    ->where('receiver_id', $receiverId)
-                    ->orWhere('sender_id', $receiverId)
-                    ->where('receiver_id', $user->id);
-            })
-            ->orderBy('messages.id','desc')
-            ->paginate(20);
-
-        return response()->json(['status_code' => 1, 'data' => ['chats' => $chats], 'message' => 'Chat fetched']);
+    return $users;
+    
+        return response()->json([
+            'status_code' => 1,
+            'data' => $users,
+            'message' => 'Friends and groups fetched with messages successfully'
+        ]);
     }
+    
+    
 }
 
 ?>

@@ -8,6 +8,7 @@ use App\Http\Controllers\V1\GroupController;
 use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
+use App\Http\Controllers\V1\ReportController;
 use App\Http\Controllers\V1\StreamingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,7 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/chat/create', [ChatController::class, 'create']);
         Route::get('/chat/fetch', [ChatController::class, 'fetchMessages']);
+        Route::get('/chat/fetch-chats', [ChatController::class, 'fetchChatList']);
 
         Route::post('/streaming/create', [StreamingController::class, 'create']);
         Route::post('/streaming/end', [StreamingController::class, 'endStream']);
@@ -65,6 +67,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/group/add-users-to-group', [GroupController::class, 'addAdditionalUserIdToGroupId']);
         Route::post('/group/remove-users-from-group', [GroupController::class, 'removeUsersFromGroup']);
         Route::post('/group/edit-name', [GroupController::class, 'editGroupName']);
+
+        Route::post('/report/create',[ReportController::class, 'create']);
         
     });
 });

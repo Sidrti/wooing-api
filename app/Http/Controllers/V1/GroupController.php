@@ -80,11 +80,16 @@ class GroupController extends Controller
         $groupUsers = GroupUsers::where('group_id', $groupId)
             ->with('user:id,name,profile_picture')
             ->get();
-    
+        
+        $adminUserId = $group->admin_id ;
+        foreach($groupUsers as $item) {
+            $item->admin = $adminUserId == $item->user_id;
+        }
         $groupInfo = [ 
             'id' => $groupId,
             'name' => $groupName,
-            'users' => $groupUsers
+            'users' => $groupUsers,
+            'is_admin' => $adminUserId == $user->id
         ];
 
         return response()->json([
