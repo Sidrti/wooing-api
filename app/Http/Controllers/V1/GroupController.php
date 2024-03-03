@@ -19,7 +19,8 @@ class GroupController extends Controller
 
         $group = Group::create([
             'name' => $request->input('name'),
-            'admin_id' => auth()->user()->id
+            'admin_id' => auth()->user()->id,
+            'type' => 'GROUP'
         ]);
 
         GroupUsers::create([

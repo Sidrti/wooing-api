@@ -4,6 +4,8 @@ namespace App\Http\Controllers\V1;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\Group;
+use App\Models\GroupUsers;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,14 +16,15 @@ class ChatController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'receiver_id' => 'exists:users,id',
-            'group_id' => 'exists:groups,id',
+            'receiver_id' => 'required_without:group_id|exists:users,id',
+            'group_id' => 'required_without:receiver_id|exists:groups,id',
             'content' => 'nullable',
             'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
             'type' => 'required|in:EMOJI,STICKER,PHOTO,VIDEO,TEXT,DIVIDER',
         ]);
 
         $user = auth()->user();
+
         $path = '';
         if($request->has('media'))
         {
@@ -30,10 +33,52 @@ class ChatController extends Controller
             $path = Helper::saveImageToServer($file,$dir);
         }
 
+        if($request->input('receiver_id')) {
+        
+            $receiver = User::find($request->input('receiver_id'));
+            $user1Id = $user->id;
+            $user2Id = $receiver->id;
+
+            $exists = Group::whereHas('groupUsers', function ($q) use ($user1Id, $user2Id) {
+                $q->where('user_id', $user1Id);
+              })->whereHas('groupUsers', function ($q) use ($user2Id) {
+                $q->where('user_id', $user2Id);  
+              })->exists();
+              
+              if(!$exists) {
+
+                $conversation = Group::create([
+                    'type' => 'PRIVATE',
+                    'admin_id' => $user1Id,
+                    'name' => null,
+                ]);
+
+                GroupUsers::firstOrCreate([
+                    'group_id' => $conversation->id,
+                    'user_id' => $user->id
+                  ]);
+                GroupUsers::firstOrCreate([
+                    'group_id' => $conversation->id,
+                    'user_id' => $receiver->id
+                ]);
+              
+              } else {
+                $conversation = Group::whereHas('groupUsers', function ($q) use ($user1Id, $user2Id) {
+                    $q->where('user_id', $user1Id);
+                  })->whereHas('groupUsers', function ($q) use ($user2Id) {
+                    $q->where('user_id', $user2Id);  
+                  })->first();
+              
+              }
+        
+        
+          } else if($request->input('group_id')) {
+            $conversation = Group::find($request->input('group_id'));
+          }
+
         $message = Message::create([
             'sender_id' => $user->id,
-            'receiver_id' => $request->input('receiver_id'),
-            'group_id' => $request->input('group_id'),
+            'group_id' => $conversation->id,
             'content' => $request->input('content'),
             'media_path' => $path,
             'type' => $request->input('type','TEXT'),
@@ -44,28 +89,17 @@ class ChatController extends Controller
     public function fetchMessages(Request $request)
     {
         $request->validate([
-            'receiver_id' => 'required_without:group_id|exists:users,id',
-            'group_id' => 'required_without:receiver_id|exists:groups,id',
+            // 'receiver_id' => 'required_without:group_id|exists:users,id',
+            'group_id' => 'required|exists:groups,id',
         ]);
 
         $user = auth()->user();
-        $receiverId = $request->input('receiver_id');
+       // $receiverId = $request->input('receiver_id');
         $groupId = $request->input('group_id');
 
-        $query = Message::with(['sender', 'receiver'])
-            ->where(function ($query) use ($user, $receiverId, $groupId) {
-                if ($groupId) {
-                    // Fetch messages for the specified group
-                    $query->where('group_id', $groupId);
-                } else {
-                    // Fetch messages for the specified receiver (one-on-one chat)
-                    $query->where(function ($query) use ($user, $receiverId) {
-                        $query->where('sender_id', $user->id)
-                            ->where('receiver_id', $receiverId)
-                            ->orWhere('sender_id', $receiverId)
-                            ->where('receiver_id', $user->id);
-                    });
-                }
+        $query = Message::with(['sender'])
+            ->where(function ($query) use ($user, $groupId) {
+                $query->where('group_id', $groupId);
             })
             ->orderBy('messages.id', 'desc')
             ->paginate(20);
@@ -75,31 +109,19 @@ class ChatController extends Controller
 
     public function fetchChatList()
     {
-        $user = auth()->user();
+        $userId = auth()->user()->id;
     
-        $users = User::select(
-            "users.id as user_id",
-            "users.email",
-            "users.name",
-            DB::raw("(SELECT content FROM messages WHERE (sender_id = users.id OR receiver_id = users.id) AND (sender_id = " . $user->id  . " OR receiver_id = " .  $user->id  . ") ORDER BY created_at DESC LIMIT 1) as last_message"),
-            DB::raw("(SELECT 
-                CASE 
-                    WHEN sender_id = " .  $user->id  . " THEN 'sent'
-                    WHEN receiver_id = " .  $user->id  . " THEN 'received'
-                END AS message_direction 
-            FROM messages 
-            WHERE (sender_id = users.id OR receiver_id = users.id) 
-                AND (sender_id = " . $user->id . " OR receiver_id = " . $user->id . ") 
-            ORDER BY created_at DESC LIMIT 1) as type"),
-        )
-        ->orderBy('users.id')
+        $groups = Group::whereHas('groupUsers', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->with(['users' => function($q) use($userId) {
+            $q->where('users.id', '!=', $userId);
+        }])
         ->get();
 
-    return $users;
-    
         return response()->json([
             'status_code' => 1,
-            'data' => $users,
+            'data' => $groups,
             'message' => 'Friends and groups fetched with messages successfully'
         ]);
     }
