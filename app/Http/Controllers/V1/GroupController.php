@@ -19,7 +19,8 @@ class GroupController extends Controller
 
         $group = Group::create([
             'name' => $request->input('name'),
-            'admin_id' => auth()->user()->id
+            'admin_id' => auth()->user()->id,
+            'type' => 'GROUP'
         ]);
 
         GroupUsers::create([
@@ -80,11 +81,16 @@ class GroupController extends Controller
         $groupUsers = GroupUsers::where('group_id', $groupId)
             ->with('user:id,name,profile_picture')
             ->get();
-    
+        
+        $adminUserId = $group->admin_id ;
+        foreach($groupUsers as $item) {
+            $item->admin = $adminUserId == $item->user_id;
+        }
         $groupInfo = [ 
             'id' => $groupId,
             'name' => $groupName,
-            'users' => $groupUsers
+            'users' => $groupUsers,
+            'is_admin' => $adminUserId == $user->id
         ];
 
         return response()->json([
