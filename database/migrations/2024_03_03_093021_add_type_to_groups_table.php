@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('groups', function (Blueprint $table) {
             Schema::table('groups', function (Blueprint $table) {
-                $table->enum('type', ['PRIVATE', 'GROUP'])
+                $table->enum('type', ['SINGLE', 'GROUP'])
                       ->default('private')
                       ->after('id');
     
