@@ -48,7 +48,7 @@ class ChatController extends Controller
               if(!$exists) {
 
                 $conversation = Group::create([
-                    'type' => 'PRIVATE',
+                    'type' => 'SINGLE',
                     'admin_id' => $user1Id,
                     'name' => null,
                 ]);

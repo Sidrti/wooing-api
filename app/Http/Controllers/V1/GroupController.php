@@ -112,7 +112,7 @@ class GroupController extends Controller
         $user = auth()->user();
     
         // Check if the authenticated user is the admin of the group
-        if ($user->id === $group->admin_id) {
+        if ($user->id == $group->admin_id) {
             // Remove the user from the group
             GroupUsers::where('group_id', $request->input('group_id'))
                 ->where('user_id', $request->input('user_id'))
@@ -134,7 +134,7 @@ class GroupController extends Controller
         $user = auth()->user();
     
         // Check if the authenticated user is the admin of the group
-        if ($user->id === $group->admin_id) {
+        if ($user->id == $group->admin_id) {
             // Remove the user from the group
             Group::where('id', $request->input('group_id'))
                 ->update(['name' => $request->input('name')]);
