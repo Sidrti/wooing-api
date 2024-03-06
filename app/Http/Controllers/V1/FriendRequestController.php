@@ -145,7 +145,50 @@ class FriendRequestController extends Controller
             'message' => 'Friends fetched successfully'
         ]);
     }
-    
+    public function fetchFriendRequestStatus(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+        $user_id = $request->input('user_id');
+        $user = auth()->user();
+       // Check if the logged-in user has sent a friend request
+        $sentRequest = FriendRequest::where('sender_id', $user->id)
+        ->where('receiver_id', $user_id)
+        ->first();
+
+        // Check if the logged-in user has received a friend request
+        $receivedRequest = FriendRequest::where('sender_id', $user_id)
+        ->where('receiver_id', $user->id)
+        ->first();
+
+        // Check if the users are already friends
+        $areFriends = FriendRequest::where(function ($query) use ($user, $user_id) {
+            $query->where('sender_id', $user->id)
+                ->where('receiver_id', $user_id)
+                ->orWhere('sender_id', $user_id)
+                ->where('receiver_id', $user->id);
+        })
+        ->where('accepted', 'ACCEPTED')
+        ->exists();
+
+        // Determine the response based on the conditions
+        if ($areFriends) {
+            $status =  "FRIENDS";
+        }
+        else if ($sentRequest) {
+        $status =  "REQUEST SENT";
+        } 
+        else if ($receivedRequest) {
+        $status =  "REQUEST RECEIVED";
+        } 
+        else {
+        $status =  "REQUEST NOT SENT";
+        }
+
+
+        return response()->json(['status_code' => 1, 'data' => ['friend_request_status' => $status], 'message' => 'Friends fetched successfully']);
+    }
 } 
 
 ?>

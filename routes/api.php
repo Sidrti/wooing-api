@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
     Route::post("/auth/register/verify",[AuthController::class,'verifyUser']);
     Route::post("/auth/login",[AuthController::class,'login']);
     Route::post("/auth/forget-password",[AuthController::class,'forgetPassword']);
+    Route::get('/streaming/test', [StreamingController::class, 'test']);
 
     Route::group(['middleware' => ['auth:sanctum']], function () { 
         Route::post("/profile/create",[ProfileController::class,'create']);
@@ -51,8 +52,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/streaming/end', [StreamingController::class, 'endStream']);
         Route::get('/streaming/fetch', [StreamingController::class, 'fetchStreams']);
         Route::post('/streaming/fetch-by-user', [StreamingController::class, 'fetchStreamsByUserId']);
+        
 
         Route::post('/friend-request/create', [FriendRequestController::class, 'create']);
+        Route::get('/friend-request/fetch-status', [FriendRequestController::class, 'fetchFriendRequestStatus']);
         Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
         Route::get('/friend-request/fetch-friends', [FriendRequestController::class, 'fetchFriends']);
         Route::get('/friend-request/fetch', [FriendRequestController::class, 'fetchFriendRequest']);
