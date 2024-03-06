@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\FriendRequest;
 use App\Models\Streaming;
@@ -75,6 +76,11 @@ class StreamingController extends Controller
         if (!$stream) {
             return response()->json(['status_code' => 0, 'message' => 'Stream not found']);
         }
+        $meetingDetails = json_decode(Helper::getMeetingDetals($stream->meeting_id));
+        if($meetingDetails->autoCloseConfig->type == 'session-end') {
+            $stream->status = 'ENDED';
+            $stream->update(['status' => 'ENDED']);
+        }
 
         $friendRequestStatus = FriendRequest::where(function ($query) use ($userId, $authUserId) {
             $query->where('sender_id', $authUserId)
@@ -87,5 +93,10 @@ class StreamingController extends Controller
         $stream->friend_request_status = $friendRequestStatus == null ? 'NOT_SENT' : $friendRequestStatus;
 
         return response()->json(['status_code' => 1, 'data' => ['stream' => $stream], 'message' => 'Stream fetched']);
+   }
+   public function test(Request $request)
+   {
+    $res = json_decode(Helper::getMeetingDetals($request->meeting_id));
+    return response()->json($res->autoCloseConfig->type);
    }
 }
