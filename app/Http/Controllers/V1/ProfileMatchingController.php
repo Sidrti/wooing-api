@@ -32,7 +32,8 @@ class ProfileMatchingController extends Controller
             //     $query->where('looking_for', $userInterests->looking_for);
             // }
 
-            $query->where('user_id','!=',$user->id);
+            $query->join('streamings','streamings.user_id','profiles.user_id');
+            $query->where('profiles.user_id','!=',$user->id);
             if ($request->has('q')) {
                 $query->where('name', 'like', '%' . $request->input('q') . '%');
             }
@@ -53,9 +54,8 @@ class ProfileMatchingController extends Controller
             }
         })
         ->with(['user:id,name,profile_picture'])
-        ->get(['user_id']); 
+        ->get(['profiles.user_id']); 
         
-        // Add online_status field (static for now)
         $matchingProfiles->each(function ($profile) {
             $profile->user->online_status = 'online'; 
         });
