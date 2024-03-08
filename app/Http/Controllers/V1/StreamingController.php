@@ -76,11 +76,11 @@ class StreamingController extends Controller
         if (!$stream) {
             return response()->json(['status_code' => 0, 'message' => 'Stream not found']);
         }
-        $meetingDetails = json_decode(Helper::getMeetingDetals($stream->meeting_id));
-        if($meetingDetails->autoCloseConfig->type == 'session-end') {
-            $stream->status = 'ENDED';
-            $stream->update(['status' => 'ENDED']);
-        }
+        // $meetingDetails = json_decode(Helper::getMeetingDetals($stream->meeting_id));
+        // if($meetingDetails->autoCloseConfig->type == 'session-end') {
+        //     $stream->status = 'ENDED';
+        //     $stream->update(['status' => 'ENDED']);
+        // }
 
         $friendRequestStatus = FriendRequest::where(function ($query) use ($userId, $authUserId) {
             $query->where('sender_id', $authUserId)
@@ -94,6 +94,44 @@ class StreamingController extends Controller
 
         return response()->json(['status_code' => 1, 'data' => ['stream' => $stream], 'message' => 'Stream fetched']);
    }
+   public function fetchAdjacentStreams(Request $request)
+   {
+        $request->validate([
+            'current_stream_id' => 'required|exists:streamings,id',
+        ]);
+
+       // Get the current stream ID from the request
+       $currentStreamId = $request->input('current_stream_id');
+   
+       // Find the current stream
+       $currentStream = Streaming::with(['user:id,name,profile_picture'])
+           ->find($currentStreamId);
+   
+       // Find the next stream
+       $nextStream = Streaming::with(['user:id,name,profile_picture'])
+           ->where('id', '>', $currentStreamId)
+           ->where('status', 'ACTIVE')
+           ->orderBy('id')
+           ->first();
+   
+       // Find the previous stream
+       $previousStream = Streaming::with(['user:id,name,profile_picture'])
+           ->where('id', '<', $currentStreamId)
+           ->where('status', 'ACTIVE')
+           ->orderByDesc('id')
+           ->first();
+   
+       return response()->json([
+           'status_code' => 1,
+           'data' => [
+               'current_stream' => $currentStream,
+               'next_stream' => $nextStream,
+               'previous_stream' => $previousStream,
+           ],
+           'message' => 'Adjacent streams fetched successfully'
+       ]);
+   }
+   
    public function test(Request $request)
    {
     $res = json_decode(Helper::getMeetingDetals($request->meeting_id));

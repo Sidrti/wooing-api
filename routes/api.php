@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/streaming/create', [StreamingController::class, 'create']);
         Route::post('/streaming/end', [StreamingController::class, 'endStream']);
         Route::get('/streaming/fetch', [StreamingController::class, 'fetchStreams']);
+        Route::get('/streaming/fetch-adjacent', [StreamingController::class, 'fetchAdjacentStreams']);
         Route::post('/streaming/fetch-by-user', [StreamingController::class, 'fetchStreamsByUserId']);
         
 

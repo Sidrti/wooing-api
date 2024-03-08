@@ -26,12 +26,13 @@ class FriendRequestController extends Controller
         ->where('receiver_id', $receiver->id)
         ->first();
 
-        if ($existingRequest->accepted != 'CANCELLED') {
+        if ($existingRequest) {
+            if($existingRequest->accepted == 'CANCELLED') {
+                $existingRequest->accepted = 'NO_ACTION';
+                $existingRequest->save();
+                return response()->json(['status_code' => 1, 'data' => [], 'message' => 'Friend request sent']);
+            }
             return response()->json(['status_code' => 0, 'data' => [], 'message' => 'Friend request already sent']);
-        }
-        if($existingRequest->accepted == 'CANCELLED') {
-            $existingRequest->accepted = 'NO_ACTION';
-            $existingRequest->save();
         }
 
         $friendRequest = new FriendRequest();
