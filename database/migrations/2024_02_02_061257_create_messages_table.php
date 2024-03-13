@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sender_id')->constrained('users');
             $table->foreignId('receiver_id')->constrained('users');
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->text('media_path')->nullable();
             $table->enum('type', ['EMOJI', 'STICKER', 'PHOTO','VIDEO','TEXT','DIVIDER'])->default('TEXT');
             $table->timestamps();

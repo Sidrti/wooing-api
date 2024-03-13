@@ -5,6 +5,7 @@ use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
 use App\Http\Controllers\V1\GroupController;
+use App\Http\Controllers\V1\NotificationController;
 use App\Http\Controllers\V1\PostController;
 use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\ProfileMatchingController;
@@ -74,5 +75,6 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/report/create',[ReportController::class, 'create']);
         
+        Route::get('/notification/fetch', [NotificationController::class, 'fetchNotications']);
     });
 });
