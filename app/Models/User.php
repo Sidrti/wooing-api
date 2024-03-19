@@ -42,7 +42,6 @@ class User extends Authenticatable
         'otp',
         'verification_uid',
         'role',
-        'is_verified'
     ];
 
     /**
@@ -52,6 +51,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'profile_filled' => 'boolean',
     ];
 
     public function profile()
