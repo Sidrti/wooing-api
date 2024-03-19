@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\V1\CommentController;
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
 use App\Http\Controllers\V1\GroupController;
@@ -31,6 +33,10 @@ Route::prefix('v1')->group(function () {
     Route::post("/auth/forget-password",[AuthController::class,'forgetPassword']);
     Route::get('/streaming/test', [StreamingController::class, 'test']);
 
+    Route::prefix('admin')->group(function () {  
+        Route::post("/auth/login",[AdminAuthController::class,'login']);
+    });
+
     Route::group(['middleware' => ['auth:sanctum']], function () { 
         Route::post("/profile/create",[ProfileController::class,'create']);
         Route::get("/profile/fetch",[ProfileController::class,'fetchProfile']);
@@ -55,7 +61,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/streaming/fetch-adjacent', [StreamingController::class, 'fetchAdjacentStreams']);
         Route::post('/streaming/fetch-by-user', [StreamingController::class, 'fetchStreamsByUserId']);
         
-
         Route::post('/friend-request/create', [FriendRequestController::class, 'create']);
         Route::get('/friend-request/fetch-status', [FriendRequestController::class, 'fetchFriendRequestStatus']);
         Route::post('/friend-request/update-status', [FriendRequestController::class, 'updateFriendRequestStatus']);
@@ -76,5 +81,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/report/create',[ReportController::class, 'create']);
         
         Route::get('/notification/fetch', [NotificationController::class, 'fetchNotications']);
+
+        Route::prefix('admin')->group(function () {  
+            Route::post("/users/fetch",[AdminUserController::class,'fetchUsers']);
+            Route::get("/users/fetch-profile-by-id",[AdminUserController::class,'fetchProfileById']);
+            Route::get("/users/search",[AdminUserController::class,'searchUsers']);
+        });
     });
 });
