@@ -4,6 +4,8 @@ use App\Http\Controllers\V1\CommentController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\V1\Admin\UserController as AdminUserController;
+use App\Http\Controllers\V1\Admin\ChatController as AdminChatController;
+use App\Http\Controllers\V1\Admin\ReportController as AdminReportControler;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
 use App\Http\Controllers\V1\GroupController;
@@ -86,6 +88,13 @@ Route::prefix('v1')->group(function () {
             Route::post("/users/fetch",[AdminUserController::class,'fetchUsers']);
             Route::get("/users/fetch-profile-by-id",[AdminUserController::class,'fetchProfileById']);
             Route::get("/users/search",[AdminUserController::class,'searchUsers']);
+            Route::post("/users/update-status",[AdminUserController::class,'updateUserStatus']);
+
+            Route::get("/chats/fetch",[AdminChatController::class,'fetchMessages']);
+
+            Route::get("/reports/fetch",[AdminReportControler::class,'fetchReports']);
+            Route::post('/reports/update-status', [AdminReportControler::class,'updateStatus']);
+
         });
     });
 });
