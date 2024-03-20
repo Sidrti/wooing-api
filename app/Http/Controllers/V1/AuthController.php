@@ -24,13 +24,19 @@ class AuthController extends Controller
         if($user) {
             $user->load('profile');
             if($user->is_verified) {
-                if ($user && Hash::check($request->input('password'), $user->password)) { 
-                    $token = $user->createToken('api-token')->plainTextToken;
-                    return response()->json(['status_code' => 1,'data' => ['user' => $user,'profile_filled' => isset($user->profile), 'token' => $token ],'message'=>'Login successfull.']);
+                if($user->status != 'INACTIVE') { 
+                    if ($user && Hash::check($request->input('password'), $user->password)) { 
+                        $token = $user->createToken('api-token')->plainTextToken;
+                        return response()->json(['status_code' => 1,'data' => ['user' => $user,'profile_filled' => isset($user->profile), 'token' => $token ],'message'=>'Login successfull.']);
+                    }
+                    else {
+                        return response()->json(['status_code' => 2, 'data' => [], 'message'=>'Incorrect password.']);
+                    }
                 }
                 else {
-                    return response()->json(['status_code' => 2, 'data' => [], 'message'=>'Incorrect password.']);
+                    return response()->json(['status_code' => 2, 'data' => [], 'message'=>'Account disabled by admin. Contact support']);
                 }
+
             }
             else {
                 return response()->json(['status_code' => 2, 'data' => [], 'message'=>'Account not verified. Please goto register first']);
