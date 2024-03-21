@@ -20,7 +20,7 @@ class UserController extends Controller
         $users = User::leftJoin('profiles', 'users.id', '=', 'profiles.user_id')
         ->select('users.*', DB::raw('IF(profiles.id IS NOT NULL, true, false) as profile_filled'))
         ->where('role','!=',2)
-        ->paginate(20);
+        ->paginate(10);
 
        return response()->json(['status_code' => 1, 'data' => ['users' => $users]]);
     }
