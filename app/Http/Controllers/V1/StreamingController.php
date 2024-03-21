@@ -76,7 +76,7 @@ class StreamingController extends Controller
         if (!$stream) {
             return response()->json(['status_code' => 0, 'message' => 'Stream not found']);
         }
-        // $meetingDetails = json_decode(Helper::getMeetingDetals($stream->meeting_id));
+        // $meetingDetails = json_decode(Helper::p($stream->meeting_id));
         // if($meetingDetails->autoCloseConfig->type == 'session-end') {
         //     $stream->status = 'ENDED';
         //     $stream->update(['status' => 'ENDED']);

@@ -59,6 +59,29 @@ class Helper
         curl_close($curl);
         return $response;
     }
+    public static function getAllHlsRecordings($roomId)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.videosdk.live/v2/hls/?roomId=".$roomId,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: '.Helper::getVideoSdkToken(),
+                'Content-Type: application/json'
+            ),
+        ));
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return $response;
+    }
     private static function getVideoSdkToken() 
     {
         $api_key = "c8daa48a-bf5e-45bb-80fb-487460b78537";

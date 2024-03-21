@@ -6,6 +6,7 @@ use App\Http\Controllers\V1\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\V1\Admin\UserController as AdminUserController;
 use App\Http\Controllers\V1\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\V1\Admin\ReportController as AdminReportControler;
+use App\Http\Controllers\V1\Admin\VideoSdkController as AdminVideoSdkController;
 use App\Http\Controllers\V1\ChatController;
 use App\Http\Controllers\V1\FriendRequestController;
 use App\Http\Controllers\V1\GroupController;
@@ -18,16 +19,6 @@ use App\Http\Controllers\V1\StreamingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy bu ilding your API!
-|
-*/
 Route::prefix('v1')->group(function () { 
     Route::post("/auth/register",[AuthController::class,'register']);
     Route::post("/auth/register/verify",[AuthController::class,'verifyUser']);
@@ -85,7 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/notification/fetch', [NotificationController::class, 'fetchNotications']);
 
         Route::prefix('admin')->group(function () {  
-            Route::post("/users/fetch",[AdminUserController::class,'fetchUsers']);
+            Route::get("/users/fetch",[AdminUserController::class,'fetchUsers']);
             Route::get("/users/fetch-profile-by-id",[AdminUserController::class,'fetchProfileById']);
             Route::get("/users/search",[AdminUserController::class,'searchUsers']);
             Route::post("/users/update-status",[AdminUserController::class,'updateUserStatus']);
@@ -94,6 +85,8 @@ Route::prefix('v1')->group(function () {
 
             Route::get("/reports/fetch",[AdminReportControler::class,'fetchReports']);
             Route::post('/reports/update-status', [AdminReportControler::class,'updateStatus']);
+
+            Route::get("/streams/fetch",[AdminVideoSdkController::class,'fetchStreams']);
 
         });
     });
