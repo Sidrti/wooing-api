@@ -13,6 +13,19 @@ class ChatController extends Controller
     public function fetchMessages(Request $request)
     {
         $request->validate([
+            'group_id' => 'required|exists:users,id',
+        ]);
+
+        $groupMessages = Message::with(['sender'])
+        ->where('group_id', $request->input('group_id'))
+        ->orderBy('id', 'desc')
+        ->paginate(20);
+    
+        return response()->json(['status_code' => 1, 'data' => ['chats' => $groupMessages], 'message' => 'Chat fetched']);
+    }
+    public function fetchGroups(Request $request)
+    {
+        $request->validate([
             'primary_user_id' => 'required|exists:users,id',
             'secondary_user_id' => 'required|exists:users,id',
         ]);
@@ -28,10 +41,6 @@ class ChatController extends Controller
     
             $groupedMessages = [];
             foreach ($groupIds as $groupId) {
-                $groupMessages = Message::with(['sender'])
-                    ->where('group_id', $groupId)
-                    ->orderBy('id', 'desc')
-                    ->get();
 
                 $group = Group::where('id',$groupId)->first();
 
@@ -39,13 +48,12 @@ class ChatController extends Controller
                     'group_id' => $groupId,
                     'group_name' => $group->name, // Assuming the group name is not directly available in the message model
                     'group_type' => $group->type, // Assuming the group type is not directly available in the message model
-                    'messages' => $groupMessages,
                 ];
         
                 $groupedMessages[] = $groupData;
             }
     
-        return response()->json(['status_code' => 1, 'data' => ['chats' => $groupedMessages], 'message' => 'Chat fetched']);
+        return response()->json(['status_code' => 1, 'data' => ['groups' => $groupedMessages], 'message' => 'Group fetched']);
     }
     
 }

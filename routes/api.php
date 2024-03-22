@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
             Route::post("/users/update-status",[AdminUserController::class,'updateUserStatus']);
 
             Route::get("/chats/fetch",[AdminChatController::class,'fetchMessages']);
+            Route::get("/chats/fetch-groups",[AdminChatController::class,'fetchGroups']);
 
             Route::get("/reports/fetch",[AdminReportControler::class,'fetchReports']);
             Route::post('/reports/update-status', [AdminReportControler::class,'updateStatus']);
