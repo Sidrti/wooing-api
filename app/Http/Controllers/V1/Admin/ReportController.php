@@ -16,7 +16,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'report_id' => 'required|exists:user_reports,id',
-            'status' => 'required|in:RESOLVED,NO_ACTION',
+            'status' => 'required|in:RESOLVED,UNRESOLVED',
         ]);
         $userReport = UserReport::findOrFail($request->input('report_id'));
         $userReport->status = $request->input('status');
